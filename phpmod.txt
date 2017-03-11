@@ -1,0 +1,1 @@
+php php-bcmath php-mbstring php-dba php-gd php-mysqlnd php-pdo php-phpseclib php-pecl-yaf php-redis php-xml php-pecl-memcached php-soap php-mcrypt php-fpm php-pecl-memcached thrift php-xcache

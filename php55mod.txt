@@ -1,0 +1,2 @@
+php55 php55-php-bcmath php55-php-mbstring php55-php-dba php55-php-gd php55-php-mysqlnd php55-php-pdo  php55-php-pecl-yaf php55-php-redis php55-php-xml php55-php-pecl-memcached php55-php-soap php55-php-mcrypt php55-php-fpm  php55-php-xcache
+

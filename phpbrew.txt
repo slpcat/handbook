@@ -1,0 +1,290 @@
+https://github.com/phpbrew/phpbrew/wiki/Requirement
+
+rootÓÃ»§
+vi ~/.bashrc
+PHPBREW_ROOT=/opt/phpbrew      # php dist files and build files are stored here
+export PHPBREW_ROOT
+PHPBREW_HOME=/opt/phpbrew    # your configuration files.
+export PHPBREW_HOME
+PHPBREW_SET_PROMPT=1
+export PHPBREW_SET_PROMPT
+
+echo "source /opt/phpbrew/bashrc" >> ~/.bashrc
+
+curl -L -O https://github.com/phpbrew/phpbrew/raw/master/phpbrew
+chmod +x phpbrew
+mv phpbrew /usr/bin/phpbrew
+
+apt-get install php5 php5-dev php5-curl
+bash
+phpbrew init
+
+apt-get build-dep php5
+apt-get install -y php5 php5-dev php-pear autoconf automake curl libcurl3-openssl-dev build-essential libxslt1-dev re2c libxml2 libxml2-dev php5-cli bison libbz2-dev libreadline-dev
+apt-get install -y libfreetype6 libfreetype6-dev libpng12-0 libpng12-dev libjpeg-dev libjpeg8-dev libjpeg8  libgd-dev libgd3 libxpm4 libltdl7 libltdl-dev
+apt-get install -y libssl-dev openssl
+apt-get install -y gettext libgettextpo-dev libgettextpo0
+apt-get install -y libicu-dev
+apt-get install -y libmhash-dev libmhash2
+apt-get install -y libmcrypt-dev libmcrypt4
+apt-get install -y mysql-server mysql-client libmysqlclient-dev libmysqld-dev
+
+ln -s /usr/include/x86_64-linux-gnu/gmp.h /usr/include/gmp.h
+
+mkdir /usr/include/freetype2/freetype
+ln -s /usr/include/freetype2/freetype.h /usr/include/freetype2/freetype/freetype.h
+ln -s  /usr/include/freetype2/ft2build.h  /usr/include/ft2build.h
+ln -s  /usr/include/freetype2/ftheader.h /usr/include/ftheader.h
+
+apt-get -y install lcov
+apt-get -y install libedit-dev
+apt-get -y install libtidy-dev
+apt-get -y install libmemcached-dev
+apt-get -y install libhiredis-dev
+
+pkg-config --cflags xft 
+
+phpbrew update --old
+
+#phpbrew install -j 4 5.3.29 +everything -fpm -gmp -gcov -debug -ipv6 -zts -pgsql -kerberos
+
+#apache
+phpbrew install -j 4 5.3.29 +default +apxs2 +curl +dba +dom +editline +exif +ftp +gd +gettext +gmp +hash +iconv +icu +imap +inifile +inline +intl +ipc +libgcc +mysql +opcache +phpdbg +session +soap +sqlite +static +tidy +wddx +xml_all +xmlrpc +zlib 
+#nginx
+phpbrew install -j 4 5.3.29 +default +fpm +curl +dba +dom +editline +exif +ftp +gd +gettext +gmp +hash +iconv +icu +imap +inifile +inline +intl +ipc +libgcc +mysql +opcache +phpdbg +session +soap +sqlite +static +tidy +wddx +xml_all +xmlrpc +zlib
+
+phpbrew switch php-5.3.29
+
+phpbrew install -j 4 5.3.29 +gd
+ 
+phpbrew ext install pspell
+phpbrew ext install apc 3.1.13
+phpbrew ext install memcached 
+phpbrew ext install redis 2.2.8
+phpbrew ext install yaf 2.3.5
+
+apt-get install libc-client2007e-dev
+ln -s /usr/lib/libc-client.so /usr/lib64/libc-client.so
+
+apt-get install libmcrypt-dev 
+apt-get install libkrb5-dev
+apt-get install libpq-dev
+
+apt-get install libfbclient2
+ln -s /usr/lib/x86_64-linux-gnu/libfbclient.so.2 /usr/lib/x86_64-linux-gnu/libfbclient.so
+
+apt-get install ldap-utils
+apt-get install libldap-2.4
+apt-get install libsasl2-dev
+apt-get install libsasl2-modules-ldap
+apt-get install freetds-dev
+ln -s /usr/lib/x86_64-linux-gnu/libsybdb.so /usr/lib/libsybdb.so
+apt-get install libpspell-dev
+apt-get install unixodbc-dev
+ln -s /usr/lib/x86_64-linux-gnu/libodbc.a /usr/local/lib/odbclib.a
+ln -s /usr/include/sqlext.h /usr/local/incl/sqlext.h
+
+ln -s /usr/lib/x86_64-linux-gnu/libmysqlclient.so /usr/lib/libmysqlclient.so
+ln -s /usr/lib/x86_64-linux-gnu/libssl.so /usr/lib/libssl.so
+
+
+
+/lib/systemd/system/php-fpm.service
+[Unit]
+Description=The PHP FastCGI Process Manager
+After=network.target
+
+[Service] 
+Type=notify
+PIDFile=/var/run/php-fpm.pid
+ExecStartPre=/opt/phpbrew/php/php-5.3.29/sbin/php-fpm -t
+ExecStart=/opt/phpbrew/php/php-5.3.29/sbin/php-fpm --nodaemonize --fpm-config /opt/phpbrew/php/php-5.3.29/etc/php-fpm.conf
+ExecReload=/bin/kill -USR2 $MAINPID
+
+[Install]
+WantedBy=multi-user.target
+
+vi /etc/init.d/php5-fpm
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          php-fpm php5-fpm
+# Required-Start:    $remote_fs $network
+# Required-Stop:     $remote_fs $network
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6	
+# Short-Description: starts php5-fpm
+# Description:       Starts The PHP FastCGI Process Manager Daemon
+### END INIT INFO
+
+# Author: Ondrej Sury <ondrej@debian.org>
+
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+DESC="PHP5 FastCGI Process Manager"
+NAME=php5-fpm
+DAEMON=/usr/sbin/$NAME
+DAEMON_ARGS="--daemonize --fpm-config /etc/php5/fpm/php-fpm.conf"
+CONF_PIDFILE=$(sed -n 's/^pid\s*=\s*//p' /etc/php5/fpm/php-fpm.conf)
+PIDFILE=${CONF_PIDFILE:-/run/php5-fpm.pid}
+TIMEOUT=30
+SCRIPTNAME=/etc/init.d/$NAME
+
+# Exit if the package is not installed
+[ -x "$DAEMON" ] || exit 0
+
+# Read configuration variable file if it is present
+[ -r /etc/default/$NAME ] && . /etc/default/$NAME
+
+# Load the VERBOSE setting and other rcS variables
+. /lib/init/vars.sh
+
+# Define LSB log_* functions.
+# Depend on lsb-base (>= 3.0-6) to ensure that this file is present.
+. /lib/lsb/init-functions
+
+# Don't run if we are running upstart
+if init_is_upstart; then
+    exit 1
+fi
+
+#
+# Function to check the correctness of the config file
+#
+do_check()
+{
+    /usr/lib/php5/php5-fpm-checkconf || return 1
+    return 0
+}
+
+#
+# Function that starts the daemon/service
+#
+do_start()
+{
+	# Return
+	#   0 if daemon has been started
+	#   1 if daemon was already running
+	#   2 if daemon could not be started
+	start-stop-daemon --start --quiet --pidfile $PIDFILE --exec $DAEMON --test > /dev/null \
+		|| return 1
+	start-stop-daemon --start --quiet --pidfile $PIDFILE --exec $DAEMON -- \
+		$DAEMON_ARGS 2>/dev/null \
+		|| return 2
+	# Add code here, if necessary, that waits for the process to be ready
+	# to handle requests from services started subsequently which depend
+	# on this one.  As a last resort, sleep for some time.
+}
+
+#
+# Function that stops the daemon/service
+#
+do_stop()
+{
+	# Return
+	#   0 if daemon has been stopped
+	#   1 if daemon was already stopped
+	#   2 if daemon could not be stopped
+	#   other if a failure occurred
+	start-stop-daemon --stop --quiet --retry=QUIT/$TIMEOUT/TERM/5/KILL/5 --pidfile $PIDFILE --name $NAME
+	RETVAL="$?"
+	[ "$RETVAL" = 2 ] && return 2
+	# Wait for children to finish too if this is a daemon that forks
+	# and if the daemon is only ever run from this initscript.
+	# If the above conditions are not satisfied then add some other code
+	# that waits for the process to drop all resources that could be
+	# needed by services started subsequently.  A last resort is to
+	# sleep for some time.
+	start-stop-daemon --stop --quiet --oknodo --retry=0/30/TERM/5/KILL/5 --exec $DAEMON
+	[ "$?" = 2 ] && return 2
+	# Many daemons don't delete their pidfiles when they exit.
+	rm -f $PIDFILE
+	return "$RETVAL"
+}
+
+#
+# Function that sends a SIGHUP to the daemon/service
+#
+do_reload() {
+	#
+	# If the daemon can reload its configuration without
+	# restarting (for example, when it is sent a SIGHUP),
+	# then implement that here.
+	#
+	start-stop-daemon --stop --signal USR2 --quiet --pidfile $PIDFILE --name $NAME
+	return 0
+}
+
+case "$1" in
+    start)
+	[ "$VERBOSE" != no ] && log_daemon_msg "Starting $DESC" "$NAME"
+	do_check $VERBOSE
+	case "$?" in
+	    0)
+		do_start
+		case "$?" in
+		    0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+		    2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+		esac
+		;;
+	    1) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+	esac
+	;;
+    stop)
+	[ "$VERBOSE" != no ] && log_daemon_msg "Stopping $DESC" "$NAME"
+	do_stop
+	case "$?" in
+		0|1) [ "$VERBOSE" != no ] && log_end_msg 0 ;;
+		2) [ "$VERBOSE" != no ] && log_end_msg 1 ;;
+	esac
+	;;
+    status)
+        status_of_proc "$DAEMON" "$NAME" && exit 0 || exit $?
+        ;;
+    check)
+        do_check yes
+	;;
+    reload|force-reload)
+	log_daemon_msg "Reloading $DESC" "$NAME"
+	do_reload
+	log_end_msg $?
+	;;
+    reopen-logs)
+	log_daemon_msg "Reopening $DESC logs" $NAME
+	if start-stop-daemon --stop --signal USR1 --oknodo --quiet \
+	    --pidfile $PIDFILE --exec $DAEMON
+	then
+	    log_end_msg 0
+	else
+	    log_end_msg 1
+	fi
+	;;
+    restart)
+	log_daemon_msg "Restarting $DESC" "$NAME"
+	do_stop
+	case "$?" in
+	  0|1)
+		do_start
+		case "$?" in
+			0) log_end_msg 0 ;;
+			1) log_end_msg 1 ;; # Old process is still running
+			*) log_end_msg 1 ;; # Failed to start
+		esac
+		;;
+	  *)
+	  	# Failed to stop
+		log_end_msg 1
+		;;
+	esac
+	;;
+    *)
+	echo "Usage: $SCRIPTNAME {start|stop|status|restart|reload|force-reload}" >&2
+	exit 1
+    ;;
+esac
+
+:
+vi /etc/profile.d/phpbrew.sh
+archlinux
+pacman -S libmcrypt tidy libxslt 
+
+
+

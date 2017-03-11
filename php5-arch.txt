@@ -1,0 +1,1 @@
+php56  php56-fpm php56-gd php56-memcached php56-mcrypt php56-pear 

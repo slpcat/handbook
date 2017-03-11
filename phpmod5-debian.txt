@@ -1,0 +1,10 @@
+﻿apt-get install php5 php5-curl php5-fpm php5-gd php5-mysqlnd php5-redis php5-memcached php5-mcrypt php-pear
+
+#yaf编译：
+apt-get install php5-dev
+pear config-set cache_dir /var/tmp/pear/cache system
+pear config-set temp_dir /var/tmp/pear/temp system
+pecl install yaf-2.3.5
+echo "extension=yaf.so" > /etc/php5/mods-available/yaf.ini
+ln -s /etc/php5/mods-available/yaf.ini /etc/php5/cli/conf.d/20-yaf.ini
+ln -s /etc/php5/mods-available/yaf.ini /etc/php5/fpm/conf.d/20-yaf.ini
