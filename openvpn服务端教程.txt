@@ -77,12 +77,12 @@ export KEY_EXPIRE=3650
 export KEY_COUNTRY="CN"
 export KEY_PROVINCE="BJ"
 export KEY_CITY="BeiJing"
-export KEY_ORG="747CN"
-export KEY_EMAIL="denghaijun@747.cn"
-export KEY_OU="747Tech"
+export KEY_ORG="example.cn"
+export KEY_EMAIL="admin@example.cn"
+export KEY_OU="Tech"
 
 # X509 Subject Field
-export KEY_NAME="747RSA"
+export KEY_NAME="RSA"
 
 # PKCS11 Smart Card
 # export PKCS11_MODULE_PATH="/usr/lib/changeme.so"
@@ -93,7 +93,7 @@ export PKCS11_PIN=1234
 # You will also need to make sure your OpenVPN server config has the duplicate-cn option set
 # export KEY_CN="CommonName"
 #
-export KEY_CN="747Inc"
+export KEY_CN="example,Inc"
 应用生效vars定义的参数
 source /etc/openvpn/easy-rsa/2.0/vars
 执行
@@ -150,7 +150,7 @@ vim /etc/openvpn/server.conf
 
 # Which local IP address should OpenVPN
 # listen on? (optional)
-local 122.112.12.154
+local 0.0.0.0
 
 # Which TCP/UDP port should OpenVPN listen on?
 # If you want to run multiple OpenVPN instances
@@ -186,7 +186,7 @@ dev tun
 # you may need to selectively disable the
 # Windows firewall for the TAP adapter.
 # Non-Windows systems usually don't need this.
-#dev-node 747vpn
+#dev-node vpn
 
 # SSL/TLS root certificate (ca), certificate
 # (cert), and private key (key).  Each client
@@ -591,7 +591,7 @@ C:\Program Files\OpenVPN\config 32位windows
 建立修改客户端配置文件文件名client.ovpn
 
 需要修改的内容 指定服务端IP和端口，指定客户端使用的证书和私玥文件
-remote 122.112.12.154 1194
+remote server-ip 1194
 ca ca.crt
 cert user01.crt
 key user01.key
