@@ -577,6 +577,8 @@ verb 3
 chkconfig openvpn on
 service openvpn start
 
+防火墙设置
+iptables -t nat -A POSTROUTING -s 10.8.0.0/16 -o eth0 -j MASQUERADE
 查看一下客户端的IP地址：ifconfig –a  
 ping 10.8.0.1 这是服务端初始的隧道IP地址
 
